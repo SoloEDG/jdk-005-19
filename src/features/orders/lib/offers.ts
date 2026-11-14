@@ -9,6 +9,7 @@ export function initialOrders(hour: number): Order[] {
       minQuality: 1,
       deadline: hour + 36,
       status: "open",
+      organic: false,
     },
     {
       id: "o2",
@@ -18,6 +19,7 @@ export function initialOrders(hour: number): Order[] {
       minQuality: 2,
       deadline: hour + 48,
       status: "open",
+      organic: false,
     },
     {
       id: "o3",
@@ -27,18 +29,21 @@ export function initialOrders(hour: number): Order[] {
       minQuality: 1,
       deadline: hour + 60,
       status: "open",
+      organic: false,
     },
   ];
 }
 export function nextOrder(serial: number, hour: number): Order {
   const item = serial % 2 ? "corn" : "berry";
+  const organic = serial % 3 === 0;
   return {
     id: `o${serial}`,
     item,
     quantity: 4,
-    reward: 90 + serial * 3,
-    minQuality: serial % 3 === 0 ? 2 : 1,
+    reward: Math.round((90 + serial * 3) * (organic ? 1.6 : 1)),
+    minQuality: organic ? 2 : 1,
     deadline: hour + 48,
     status: "open",
+    organic,
   };
 }

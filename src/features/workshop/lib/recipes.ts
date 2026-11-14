@@ -11,6 +11,16 @@ export interface Recipe {
 }
 export const recipes: Recipe[] = [
   {
+    id: "compost",
+    name: "堆肥发酵",
+    input: "residue",
+    amount: 3,
+    output: "compost",
+    quantity: 2,
+    duration: 10,
+    cost: 2,
+  },
+  {
     id: "jam",
     name: "莓果酱",
     input: "berry",

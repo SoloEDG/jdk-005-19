@@ -592,6 +592,89 @@ h1 {
   font-size: 10px;
   padding: 6px 9px;
 }
+.soil-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.soil-cell {
+  background: #f6f7ec;
+  border: 1px solid #e6e9d8;
+  border-radius: 5px;
+  padding: 7px 9px;
+  font-size: 9px;
+  color: #8b9682;
+}
+.soil-cell strong {
+  display: block;
+  font-size: 13px;
+  color: #4d6b3f;
+  margin-top: 2px;
+}
+.soil-cell .bar {
+  display: block;
+  height: 3px;
+  background: #e3e7d4;
+  border-radius: 2px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+.soil-cell .bar i {
+  display: block;
+  height: 100%;
+  background: #8eaa70;
+}
+.soil-note {
+  font-size: 9px;
+  color: #98a18d;
+  margin-top: 8px;
+}
+.tag {
+  display: inline-block;
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #e1efdd;
+  color: #4d7a4f;
+  margin-left: 4px;
+  vertical-align: 1px;
+}
+.tag.chem {
+  background: #f4e6d7;
+  color: #a06a3f;
+}
+.fertilize-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 10px;
+}
+.fertilize-row button {
+  font-size: 9px;
+  padding: 5px 8px;
+}
+.fertilize-row button small {
+  font-size: 8px;
+}
+.fertilize-hint {
+  font-size: 9px;
+  color: #a0aa90;
+  width: 100%;
+}
+.plot.worn {
+  background: #8a6a48;
+  border-color: #a07e52;
+  filter: saturate(0.75);
+}
+.organic-mark {
+  position: absolute;
+  left: 2px;
+  top: -6px;
+  font-size: 10px;
+  z-index: 2;
+}
 .tabs {
   display: flex;
   border-bottom: 1px solid #dce2ce;

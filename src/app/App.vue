@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import { ClockPanel, weatherAt } from "../features/clock";
 import { FarmScene, FieldsPanel } from "../features/fields";
 import { WarehousePanel } from "../features/warehouse";
@@ -10,6 +10,11 @@ const farm = createWorkspace(),
   active = ref(0),
   tab = ref("warehouse");
 const { clock, warehouse, fields, workshop, orders, engine, notices } = farm;
+const fertilizerBatches = computed(() =>
+  warehouse.state.batches.filter(
+    (b) => b.item === "compost" || b.item === "fertilizer",
+  ),
+);
 const timer = setInterval(() => {
   if (!clock.state.paused) engine.advance(1);
 }, 1500);
@@ -63,16 +68,23 @@ function reset() {
           </div>
           <FarmScene
             :plots="fields.state.plots"
+            :soils="fields.state.soils"
             :weather="weatherAt(clock.state.hour)"
             @plot="(id) => (active = id)"
           /><FieldsPanel
             :plots="fields.state.plots"
+            :soils="fields.state.soils"
             :selected="fields.state.selected"
             :active="active"
+            :fertilizers="fertilizerBatches"
+            :free="warehouse.free"
             @select="fields.select"
             @plant="(id) => fields.plant(id, clock.state.hour)"
             @water="fields.water"
             @harvest="fields.harvest"
+            @clear="fields.clear"
+            @fertilize="(batch) => fields.fertilize(active, batch, clock.state.hour)"
+            @buy-fertilizer="farm.buyFertilizer"
           />
           <section class="activity">
             <span>农场手记</span>
@@ -124,7 +136,7 @@ function reset() {
           <div class="tip-card">
             <span>✦ 今日小贴士</span>
             <p>
-              雨天不用浇水，可以留些时间给工坊。<br />蓝莓能连续收获三次，记得照顾它。
+              同科连种会伤地，换科轮作慢慢养回来。<br />收获残渣送去工坊堆肥，有机订单只认连续有机的田地。
             </p>
             <small>跟着季节的节奏，慢慢来就好。</small>
           </div>

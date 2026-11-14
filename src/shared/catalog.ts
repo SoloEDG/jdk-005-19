@@ -8,6 +8,9 @@ export const items: Record<
   berry: { name: "蓝莓", icon: "🫐", life: 48, value: 15 },
   jam: { name: "莓果酱", icon: "🫙", life: 120, value: 40 },
   flour: { name: "玉米粉", icon: "🌾", life: 120, value: 32 },
+  residue: { name: "秸秆残渣", icon: "🍂", life: 96, value: 1 },
+  compost: { name: "堆肥", icon: "🪱", life: 240, value: 6 },
+  fertilizer: { name: "化肥", icon: "🧪", life: 720, value: 10 },
 };
 export const itemName = (item: Item) => items[item].name;
 export const hourLabel = (hour: number) =>

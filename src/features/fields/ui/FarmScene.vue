@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import type { Plot } from "../../../shared/contracts";
+import type { Immutable, Plot, Soil } from "../../../shared/contracts";
 import { items } from "../../../shared/catalog";
-import { growthStage, sceneTrees } from "../lib/scene";
+import { growthStage, sceneTrees, soilWorn } from "../lib/scene";
 import { ready } from "../lib/crops";
-defineProps<{ plots: readonly Readonly<Plot>[]; weather: string }>();
+import { organicEligible } from "../lib/soil";
+defineProps<{
+  plots: readonly Immutable<Plot>[];
+  soils: readonly Immutable<Soil>[];
+  weather: string;
+}>();
 defineEmits<{ plot: [id: number] }>();
 </script>
 <template>
@@ -37,7 +42,10 @@ defineEmits<{ plot: [id: number] }>();
         v-for="plot in plots"
         :key="plot.id"
         class="plot"
-        :class="{ 'is-ready': plot.crop && ready(plot.crop) }"
+        :class="{
+          'is-ready': plot.crop && ready(plot.crop),
+          worn: soils[plot.id] && soilWorn(soils[plot.id]!),
+        }"
         :data-plot="plot.id"
         @click="$emit('plot', plot.id)"
       >
@@ -47,8 +55,17 @@ defineEmits<{ plot: [id: number] }>();
           :style="{ fontSize: `${14 + growthStage(plot) * 8}px` }"
           >{{
             growthStage(plot) === 1 ? "🌱" : items[plot.crop.item].icon
-          }}</span><span v-else class="empty-plot">+</span
+          }}</span
+        ><span v-else class="empty-plot">+</span
         ><b v-if="plot.crop && ready(plot.crop)" class="ready-mark">!</b
+        ><b
+          v-else-if="
+            plot.crop &&
+            soils[plot.id] &&
+            organicEligible(soils[plot.id]!, plot.crop)
+          "
+          class="organic-mark"
+          >🌿</b
         ><i
           v-if="plot.crop"
           class="water-meter"

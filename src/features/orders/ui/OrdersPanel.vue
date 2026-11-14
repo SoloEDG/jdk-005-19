@@ -30,7 +30,8 @@ const statusName = {
       <div class="order-info">
         <strong
           >{{ items[order.item].name }} ×{{ order.quantity }}
-          <em>{{ "★".repeat(order.minQuality) }}起</em></strong
+          <em>{{ "★".repeat(order.minQuality) }}起</em
+          ><em v-if="order.organic" class="tag">有机订单</em></strong
         ><small
           >{{ order.id }} · {{ statusName[order.status] }} ·
           {{ Math.max(0, order.deadline - hour) }}h</small

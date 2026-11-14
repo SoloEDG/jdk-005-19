@@ -41,7 +41,8 @@ defineEmits<{ enqueue: [recipe: string]; claim: [id: string] }>();
         class="primary"
         @click="$emit('claim', job.id)"
       >
-        领取成品 {{ "★".repeat(job.receipt?.quality ?? 1) }}</button
+        领取成品 {{ "★".repeat(job.receipt?.quality ?? 1)
+        }}<template v-if="job.receipt?.organic">·有机</template></button
       ><small v-else>加工失败</small>
     </div>
     <p v-if="!jobs.some((j) => j.status !== 'claimed')" class="hint">

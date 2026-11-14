@@ -21,7 +21,8 @@ defineEmits<{ sell: [id: string] }>();
         <div>
           <strong
             >{{ items[batch.item].name }}
-            <em>{{ "★".repeat(batch.quality) }}</em></strong
+            <em>{{ "★".repeat(batch.quality) }}</em
+            ><em v-if="batch.organic" class="tag">有机</em></strong
           ><small
             >{{ batch.id }} · {{ batch.source }} · {{ batch.expires - hour }}h
             后到期</small
@@ -37,6 +38,6 @@ defineEmits<{ sell: [id: string] }>();
       </div>
       <p v-if="!batches.length" class="empty">谷仓空了，去田里收获吧。</p>
     </div>
-    <p class="hint">按先到期批次配货 · 已占用货物不可出售</p>
+    <p class="hint">按先到期批次配货 · 已占用货物不可出售 · 有机批次随加工保留资格</p>
   </section>
 </template>

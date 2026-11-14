@@ -7,6 +7,7 @@ interface Ports {
     item: Item,
     n: number,
     minQuality?: number,
+    organic?: boolean,
   ) => string | null;
   consume: (id: string) => Receipt | null;
   release: (id: string) => void;
@@ -38,9 +39,14 @@ export function createOrders(ports: Ports, notice: Notice, hour: number) {
         o.item,
         o.quantity,
         o.minQuality,
+        o.organic,
       );
       if (!reservation) {
-        notice("可用库存不足，先收获或加工");
+        notice(
+          o.organic
+            ? "没有满足连续有机种植与堆肥条件的库存"
+            : "可用库存不足，先收获或加工",
+        );
         return;
       }
       o.reservation = reservation;
@@ -60,12 +66,11 @@ export function createOrders(ports: Ports, notice: Notice, hour: number) {
       }
       o.status = "delivered";
       state.coins += o.reward;
-      state.xp += 40 + (receipt.quality > 1 ? 10 : 0);
+      const xp = 40 + (receipt.quality > 1 ? 10 : 0) + (o.organic ? 15 : 0);
+      state.xp += xp;
       state.delivered++;
       state.orders.push(nextOrder(++state.serial, hour));
-      notice(
-        `交付成功，收入 ¥${o.reward} / +${40 + (receipt.quality > 1 ? 10 : 0)} 经验`,
-      );
+      notice(`交付成功，收入 ¥${o.reward} / +${xp} 经验`);
     },
     cancel(id: string) {
       const o = state.orders.find((o) => o.id === id);

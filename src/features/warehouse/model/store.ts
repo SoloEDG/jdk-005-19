@@ -21,22 +21,32 @@ export function createWarehouse(now: () => number, notice: Notice) {
     q = 1,
     hour = now(),
     source = "田间收获",
+    organic = false,
   ) => {
     state.batches.push(
-      makeBatch(item, n, q, hour, `b${++state.serial}`, source),
+      makeBatch(item, n, q, hour, `b${++state.serial}`, source, organic),
     );
   };
   add("carrot", 8, 2);
   add("berry", 6, 2);
   add("corn", 8, 1);
+  add("compost", 3, 1, undefined, "建场堆肥", true);
+  const take = (id: string, n: number) => {
+    const b = state.batches.find((b) => b.id === id);
+    if (!b || available(b, state.reservations) < n) return null;
+    b.quantity -= n;
+    if (!b.quantity) state.batches = state.batches.filter((b) => b.id !== id);
+    return b.item;
+  };
   return {
     state: readonly(state),
     add,
+    take,
     free: (id: string) => {
       const b = state.batches.find((b) => b.id === id);
       return b ? available(b, state.reservations) : 0;
     },
-    reserve(owner: string, item: Item, n: number, minQuality = 1) {
+    reserve(owner: string, item: Item, n: number, minQuality = 1, organic = false) {
       const allocations = allocate(
         state.batches,
         state.reservations,
@@ -44,6 +54,7 @@ export function createWarehouse(now: () => number, notice: Notice) {
         n,
         now(),
         minQuality,
+        organic,
       );
       if (!allocations) return null;
       const id = `r${++state.serial}`;
@@ -67,6 +78,9 @@ export function createWarehouse(now: () => number, notice: Notice) {
           (a) => state.batches.find((b) => b.id === a.batch)!.source,
         ),
         quantity: r.allocations.reduce((n, a) => n + a.quantity, 0),
+        organic: r.allocations.every(
+          (a) => state.batches.find((b) => b.id === a.batch)!.organic,
+        ),
       };
       for (const a of r.allocations)
         state.batches.find((b) => b.id === a.batch)!.quantity -= a.quantity;
@@ -77,13 +91,7 @@ export function createWarehouse(now: () => number, notice: Notice) {
     release: (id: string) => {
       state.reservations = state.reservations.filter((r) => r.id !== id);
     },
-    sell(id: string, n: number) {
-      const b = state.batches.find((b) => b.id === id);
-      if (!b || available(b, state.reservations) < n) return null;
-      b.quantity -= n;
-      if (!b.quantity) state.batches = state.batches.filter((b) => b.id !== id);
-      return b.item;
-    },
+    sell: (id: string, n: number) => take(id, n),
     tick(hour: number) {
       const expired = state.batches.filter((b) => b.expires <= hour);
       state.wasted += expired.reduce((n, b) => n + b.quantity, 0);

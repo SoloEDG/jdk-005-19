@@ -14,7 +14,22 @@ export function createWorkspace() {
   const clock = createClock();
   const warehouse = createWarehouse(() => clock.state.hour, notice);
   const orders = createOrders(warehouse, notice, clock.state.hour);
-  const fields = createFields(orders.spend, warehouse.add, notice);
+  const fields = createFields(
+    {
+      spend: orders.spend,
+      harvest: (item, n, q, organic) =>
+        warehouse.add(
+          item,
+          n,
+          q,
+          undefined,
+          item === "residue" ? "田间残渣" : "田间收获",
+          organic,
+        ),
+      take: warehouse.take,
+    },
+    notice,
+  );
   const workshop = createWorkshop(
     { ...warehouse, spend: orders.spend },
     notice,
@@ -50,6 +65,14 @@ export function createWorkspace() {
         orders.earn(salePrice(items[item].value));
         notice(`出售${items[item].name} 1 份`);
       }
+    },
+    buyFertilizer() {
+      if (!orders.spend(12)) {
+        notice("资金不足，买不起化肥");
+        return;
+      }
+      warehouse.add("fertilizer", 2, 1, undefined, "农资店", false);
+      notice("买回 2 份化肥，见效快但本轮会失去有机资格");
     },
     save() {
       try {
